@@ -1,38 +1,39 @@
-package infrastructure
+package app
 
 import (
 	"fmt"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
 // Application default response.
 // Allows to standardize the response from the server.
 type Response struct {
-	Status  bool              `json:"status"`
-	Message string            `json:"message"`
-	Errors  map[string]string `json:"errors"`
-	Data    interface{}       `json:"data"`
+	Status  bool        `json:"status"`
+	Message string      `json:"message"`
+	Errors  interface{} `json:"errors"`
+	Data    interface{} `json:"data"`
 }
 
 // Allows to initialize response fields.
-func (r *Response) Construct(status bool, message string, err error, data interface{}) {
+func (r *Response) Construct(status bool, message string, errors interface{}, data interface{}) {
 	r.Status = status
 	r.Message = message
-	r.Errors = mapValidationErrors(err)
+	r.Errors = errors
 	r.Data = data
 }
 
 // Allows to build application response.
-func BuildResponse(status bool, message string, err error, data interface{}) Response {
+func BuildResponse(status bool, message string, errors interface{}, data interface{}) Response {
 	response := new(Response)
-	response.Construct(status, message, err, data)
+	response.Construct(status, message, errors, data)
 	return *response
 }
 
 // Allows to build empty response with only string message.
-func EmptyResponse(message string) Response {
-	return BuildResponse(true, message, nil, nil)
+func EmptyResponse(status bool, message string) Response {
+	return BuildResponse(status, message, nil, nil)
 }
 
 // Alows to build success response.
@@ -41,18 +42,22 @@ func OkResponse(message string, data interface{}) Response {
 }
 
 // Allows to build bad response.
-func BadResponse(message string, err error) Response {
-	return BuildResponse(false, message, err, nil)
+func BadResponse(message string, errors interface{}) Response {
+	return BuildResponse(false, message, errors, nil)
 }
 
-// Mapping error string to readable dictionary.
-func mapValidationErrors(err error) map[string]string {
+// Mapping http context errors to readable dictionary.
+func MapContextErrors(ctx *gin.Context) map[string]string {
 	errors := make(map[string]string)
-	if err == nil {
+	if ctx.Errors == nil {
 		return errors
 	}
 
-	return mapErrors(&errors, err)
+	for _, err := range ctx.Errors {
+		mapErrors(&errors, err.Err)
+	}
+
+	return errors
 }
 
 func mapErrors(errors *map[string]string, err error) map[string]string {

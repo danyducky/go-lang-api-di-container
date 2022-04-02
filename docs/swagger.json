@@ -23,7 +23,7 @@
                 "tags": [
                     "sign"
                 ],
-                "summary": "Allows the user to login",
+                "summary": "Allows the user to login nonono",
                 "parameters": [
                     {
                         "description": "Login object",
@@ -39,7 +39,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/infrastructure.Response"
+                            "$ref": "#/definitions/sign.LoginCommand"
                         }
                     }
                 }
@@ -59,13 +59,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/infrastructure.Response"
+                            "$ref": "#/definitions/app.Response"
                         }
                     }
                 }
             }
         },
-        "/user/me": {
+        "/user": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -89,6 +89,19 @@
         }
     },
     "definitions": {
+        "app.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "errors": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
         "dtos.UserDto": {
             "type": "object",
             "properties": {
@@ -100,24 +113,6 @@
                 }
             }
         },
-        "infrastructure.Response": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "errors": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
         "sign.LoginCommand": {
             "type": "object",
             "required": [
@@ -125,6 +120,10 @@
                 "password"
             ],
             "properties": {
+                "age": {
+                    "type": "integer",
+                    "minimum": 18
+                },
                 "email": {
                     "type": "string"
                 },

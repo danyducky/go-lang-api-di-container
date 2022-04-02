@@ -1,14 +1,40 @@
-package config
+package app
 
 import (
 	"fmt"
 	"os"
 
+	"github.com/danyducky/social/domain/models"
 	"github.com/jackc/pgx"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
+// Application database wrapper.
+type Database struct {
+	Connection *gorm.DB
+}
+
+// Creates application database instance.
+func NewDatabase(config Config) Database {
+	createDatabaseIfNotExists("social")
+	connection := postgres.Open(config.ConnectionString)
+	database, err := gorm.Open(connection, &gorm.Config{})
+
+	if err != nil {
+		panic(err)
+	}
+
+	// runs auto migration for given models.
+	database.AutoMigrate(&models.User{}, &models.Role{})
+
+	return Database{
+		Connection: database,
+	}
+}
+
 var (
-	// Representing data for connect to default postgres database.
+	// Represents data for connect to default postgres database.
 	defaultConnection = pgx.ConnConfig{
 		Host:     "localhost",
 		Port:     5432,
@@ -19,7 +45,7 @@ var (
 )
 
 // Allows to create database if not exists.
-func CreateDatabaseIfNotExists(dbName string) {
+func createDatabaseIfNotExists(dbName string) {
 	conn, err := pgx.Connect(defaultConnection)
 
 	if err != nil {

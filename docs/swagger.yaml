@@ -1,5 +1,14 @@
 basePath: /api
 definitions:
+  app.Response:
+    properties:
+      data: {}
+      errors: {}
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
   dtos.UserDto:
     properties:
       firstname:
@@ -7,20 +16,11 @@ definitions:
       lastname:
         type: string
     type: object
-  infrastructure.Response:
-    properties:
-      data: {}
-      errors:
-        additionalProperties:
-          type: string
-        type: object
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
   sign.LoginCommand:
     properties:
+      age:
+        minimum: 18
+        type: integer
       email:
         type: string
       password:
@@ -49,7 +49,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/infrastructure.Response'
+            $ref: '#/definitions/app.Response'
       summary: Allows the user to logout
       tags:
       - sign
@@ -69,11 +69,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/infrastructure.Response'
-      summary: Allows the user to login
+            $ref: '#/definitions/sign.LoginCommand'
+      summary: Allows the user to login nonono
       tags:
       - sign
-  /user/me:
+  /user:
     get:
       consumes:
       - application/json

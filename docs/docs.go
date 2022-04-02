@@ -31,7 +31,7 @@ const docTemplate = `{
                 "tags": [
                     "sign"
                 ],
-                "summary": "Allows the user to login",
+                "summary": "Allows the user to login nonono",
                 "parameters": [
                     {
                         "description": "Login object",
@@ -47,7 +47,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/infrastructure.Response"
+                            "$ref": "#/definitions/sign.LoginCommand"
                         }
                     }
                 }
@@ -67,13 +67,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/infrastructure.Response"
+                            "$ref": "#/definitions/app.Response"
                         }
                     }
                 }
             }
         },
-        "/user/me": {
+        "/user": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -97,6 +97,19 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "app.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "errors": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
         "dtos.UserDto": {
             "type": "object",
             "properties": {
@@ -108,24 +121,6 @@ const docTemplate = `{
                 }
             }
         },
-        "infrastructure.Response": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "errors": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
         "sign.LoginCommand": {
             "type": "object",
             "required": [
@@ -133,6 +128,10 @@ const docTemplate = `{
                 "password"
             ],
             "properties": {
+                "age": {
+                    "type": "integer",
+                    "minimum": 18
+                },
                 "email": {
                     "type": "string"
                 },

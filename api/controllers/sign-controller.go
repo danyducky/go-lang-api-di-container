@@ -3,9 +3,8 @@ package controllers
 import (
 	"net/http"
 
+	sign "github.com/danyducky/social/domain/commands"
 	"github.com/gin-gonic/gin"
-	sign "site.com/commands"
-	helper "site.com/infrastructure"
 )
 
 type SignController interface {
@@ -21,25 +20,21 @@ func NewSignController() SignController {
 }
 
 // Login
-// @Summary Allows the user to login
+// @Summary Allows the user to login nonono
 // @Tags sign
 // @Accept json
 // @Produce json
-// @Success 200 {object} helper.Response
+// @Success 200 {object} sign.LoginCommand
 // @Param LoginCommand body sign.LoginCommand true "Login object"
 // @Router /sign [post]
 func (c *signController) Login(ctx *gin.Context) {
 	var command sign.LoginCommand
-	var response helper.Response
 
 	if err := ctx.BindJSON(&command); err != nil {
-		response = helper.BadResponse("Something went wrong.", err)
-		ctx.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	response = helper.OkResponse("Everything is ok. Here the user must login :)", command)
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusOK, command)
 }
 
 // Logout
@@ -47,9 +42,13 @@ func (c *signController) Login(ctx *gin.Context) {
 // @Tags sign
 // @Accept json
 // @Produce json
-// @Success 200 {object} helper.Response
+// @Success 200 {object} app.Response
 // @Router /sign [delete]
 func (c *signController) Logout(ctx *gin.Context) {
-	response := helper.EmptyResponse("Everything is ok. Here the user must logout :)")
+	response := sign.LoginCommand{
+		Email:    "morikov2000@gmail.com",
+		Password: "123145212512",
+		Age:      21,
+	}
 	ctx.JSON(http.StatusOK, response)
 }

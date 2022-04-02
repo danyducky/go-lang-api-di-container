@@ -1,13 +1,18 @@
 package main
 
 import (
+	"context"
+
+	"github.com/danyducky/social/api/controllers"
+	"github.com/danyducky/social/api/middlewares"
+	"github.com/danyducky/social/api/routes"
+	"github.com/danyducky/social/app"
+	docs "github.com/danyducky/social/docs"
+	"github.com/danyducky/social/internal/repositories"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"gorm.io/gorm"
-	"site.com/config"
-	"site.com/database"
-	docs "site.com/docs"
+	"go.uber.org/fx"
 )
 
 // https://github.com/swaggo/swag/blob/master/example/celler/main.go
@@ -23,28 +28,68 @@ import (
 
 // @BasePath  /api
 
-var (
-	db *gorm.DB = database.Connect()
+// Main application container for dependency injection.
+var Container = fx.Options(
+	controllers.Container,
+	repositories.Container,
+	app.Container,
+	middlewares.Container,
+	routes.Container,
+
+	// Calls application lifecycle method.
+	fx.Invoke(configure),
 )
 
 func main() {
-	// close database connection when the application shutdown.
-	defer database.Close(db)
+	fx.New(Container).Run()
+}
 
-	// gin engine initializtion.
-	router := gin.Default()
+// Configures application lifecycle.
+func configure(
+	lifecycle fx.Lifecycle,
+	handler app.Context,
+	config app.Config,
+	db app.Database,
+	middlewares middlewares.Middlewares,
+	routes routes.Routes,
+) {
+	conn, _ := db.Connection.DB()
 
-	docs.SwaggerInfo.BasePath = "/api"
+	lifecycle.Append(fx.Hook{
 
-	// setup request/response middlewares.
-	config.SetupMiddlewares(router)
+		// Called when application is started.
+		OnStart: func(context.Context) error {
+			conn.SetMaxOpenConns(10)
 
-	// setup endpoint routes.
-	config.SetupRouter(router)
+			go func() {
+				setEnviroment(config)
 
-	// configure swagger support.
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+				// base path for all swagger [@Router] values.
+				docs.SwaggerInfo.BasePath = "/api"
 
-	// Listen and Server in 0.0.0.0:5001
-	router.Run(":5001")
+				// configure swagger support.
+				handler.Gin.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+				middlewares.Setup()
+				routes.Setup()
+
+				handler.Gin.Run(":" + config.Application.Port)
+			}()
+			return nil
+		},
+
+		// Called when application is stopped.
+		OnStop: func(context.Context) error {
+			conn.Close()
+			return nil
+		},
+	})
+}
+
+func setEnviroment(config app.Config) {
+	if config.Environment.Mode == "development" {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
 }
