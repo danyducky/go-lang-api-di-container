@@ -12,6 +12,8 @@ type UserRepository interface {
 	Get() []models.User
 	Find(id int) models.User
 	FindBy(field string, value interface{}) models.User
+
+	Insert(user models.User) uint
 }
 
 // User repository structure.
@@ -46,4 +48,9 @@ func (r *userRepository) FindBy(field string, value interface{}) models.User {
 	stmt := fmt.Sprintf("%s = ?", field)
 	r.database.Connection.Where(stmt, value).First(&user)
 	return user
+}
+
+func (r *userRepository) Insert(user models.User) uint {
+	r.database.Connection.Create(&user)
+	return user.ID
 }

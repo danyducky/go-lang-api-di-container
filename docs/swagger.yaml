@@ -30,6 +30,16 @@ definitions:
     - email
     - password
     type: object
+  user.RegisterCommand:
+    properties:
+      firstname:
+        type: string
+      lastname:
+        type: string
+    required:
+    - firstname
+    - lastname
+    type: object
 info:
   contact:
     email: ourworkemail@gmail.com
@@ -85,6 +95,26 @@ paths:
           schema:
             $ref: '#/definitions/dtos.UserDto'
       summary: Represent information about current user
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Register object
+        in: body
+        name: RegisterCommand
+        required: true
+        schema:
+          $ref: '#/definitions/user.RegisterCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.RegisterCommand'
+      summary: Allows user to register
       tags:
       - user
 swagger: "2.0"

@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	sign "github.com/danyducky/social/domain/commands"
+	"github.com/danyducky/social/domain/commands/sign"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,7 +20,7 @@ func NewSignController() SignController {
 }
 
 // Login
-// @Summary Allows the user to login nonono
+// @Summary Allows the user to login
 // @Tags sign
 // @Accept json
 // @Produce json

@@ -24,5 +24,6 @@ func (s UserRoutes) Setup() {
 	api := s.context.ApiGroup.Group("/user")
 	{
 		api.GET("/", s.userController.GetMe)
+		api.POST("/", s.userController.Register)
 	}
 }
