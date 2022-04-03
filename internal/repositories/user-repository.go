@@ -13,7 +13,7 @@ type UserRepository interface {
 	Find(id int) models.User
 	FindBy(field string, value interface{}) models.User
 
-	Insert(user models.User) uint
+	Insert(user *models.User)
 }
 
 // User repository structure.
@@ -50,7 +50,6 @@ func (r *userRepository) FindBy(field string, value interface{}) models.User {
 	return user
 }
 
-func (r *userRepository) Insert(user models.User) uint {
+func (r *userRepository) Insert(user *models.User) {
 	r.database.Connection.Create(&user)
-	return user.ID
 }

@@ -32,13 +32,26 @@ definitions:
     type: object
   user.RegisterCommand:
     properties:
+      email:
+        type: string
       firstname:
         type: string
+      gender:
+        type: integer
       lastname:
         type: string
+      password:
+        minLength: 6
+        type: string
+      phoneNumber:
+        type: string
     required:
+    - email
     - firstname
+    - gender
     - lastname
+    - password
+    - phoneNumber
     type: object
 info:
   contact:
@@ -80,7 +93,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/sign.LoginCommand'
-      summary: Allows the user to login nonono
+      summary: Allows the user to login
       tags:
       - sign
   /user:

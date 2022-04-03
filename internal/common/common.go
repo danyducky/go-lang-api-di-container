@@ -1,7 +1,7 @@
-package services
+package common
 
 import "go.uber.org/fx"
 
 var Container = fx.Options(
-	fx.Provide(NewUserService),
+	fx.Provide(NewHashService),
 )

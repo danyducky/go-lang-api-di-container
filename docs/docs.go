@@ -31,7 +31,7 @@ const docTemplate = `{
                 "tags": [
                     "sign"
                 ],
-                "summary": "Allows the user to login nonono",
+                "summary": "Allows the user to login",
                 "parameters": [
                     {
                         "description": "Login object",
@@ -175,14 +175,31 @@ const docTemplate = `{
         "user.RegisterCommand": {
             "type": "object",
             "required": [
+                "email",
                 "firstname",
-                "lastname"
+                "gender",
+                "lastname",
+                "password",
+                "phoneNumber"
             ],
             "properties": {
+                "email": {
+                    "type": "string"
+                },
                 "firstname": {
                     "type": "string"
                 },
+                "gender": {
+                    "type": "integer"
+                },
                 "lastname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                },
+                "phoneNumber": {
                     "type": "string"
                 }
             }

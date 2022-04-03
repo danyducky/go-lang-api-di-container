@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/danyducky/social/api/dtos"
+	"github.com/danyducky/social/api/handlers"
 	"github.com/danyducky/social/domain/commands/user"
 	"github.com/gin-gonic/gin"
 )
@@ -14,10 +15,13 @@ type UserController interface {
 }
 
 type userController struct {
+	handler handlers.UserHandler
 }
 
-func NewUserController() UserController {
-	return &userController{}
+func NewUserController(handler handlers.UserHandler) UserController {
+	return &userController{
+		handler: handler,
+	}
 }
 
 // GetMe
@@ -50,6 +54,7 @@ func (c *userController) Register(ctx *gin.Context) {
 	if err := ctx.BindJSON(&command); err != nil {
 		return
 	}
+	userId := c.handler.HandleRegister(command)
 
-	ctx.JSON(http.StatusOK, command)
+	ctx.JSON(http.StatusOK, userId)
 }

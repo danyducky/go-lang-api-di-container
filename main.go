@@ -4,11 +4,14 @@ import (
 	"context"
 
 	"github.com/danyducky/social/api/controllers"
+	"github.com/danyducky/social/api/handlers"
 	"github.com/danyducky/social/api/middlewares"
 	"github.com/danyducky/social/api/routes"
 	"github.com/danyducky/social/app"
 	docs "github.com/danyducky/social/docs"
+	"github.com/danyducky/social/internal/common"
 	"github.com/danyducky/social/internal/repositories"
+	"github.com/danyducky/social/internal/services"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -32,9 +35,12 @@ import (
 var Container = fx.Options(
 	controllers.Container,
 	repositories.Container,
+	services.Container,
+	handlers.Container,
 	app.Container,
 	middlewares.Container,
 	routes.Container,
+	common.Container,
 
 	// Calls application lifecycle method.
 	fx.Invoke(configure),
